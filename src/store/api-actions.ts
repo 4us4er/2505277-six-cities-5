@@ -37,6 +37,32 @@ const fetchOffersAction = createAsyncThunk<
   dispatch(loadOffers(data));
 });
 
+const fetchSelectedOffersAction = createAsyncThunk<
+  OfferData,
+  { offerID: string | undefined },
+  {
+    dispatch: AppDispatch;
+    state: State;
+    extra: ThunkExtra;
+  }
+>('data/fetchSelectedOffers', async ({ offerID }, { extra }) => {
+  const { data } = await extra.api.get<OfferData>(
+    `${APIRoute.Offers}/${offerID}`
+  );
+
+  return data;
+});
+
+const fetchNearbyOfferAction = createAsyncThunk<
+  OfferData[],
+  { offerID: string | undefined },
+  { dispatch: AppDispatch; state: State; extra: ThunkExtra }
+>('data/fetchNearbyOffer', async ({ offerID }, { extra }) => {
+  const { data } = await extra.api.get<OfferData[]>(
+    `${APIRoute.Offers}/${offerID}/nearby`
+  );
+  return data;
+});
 const fetchFavoritesAction = createAsyncThunk<
   void,
   undefined,
@@ -134,4 +160,6 @@ export {
   fetchOffersAction,
   fetchFavoritesAction,
   changeStatus,
+  fetchSelectedOffersAction,
+  fetchNearbyOfferAction,
 };

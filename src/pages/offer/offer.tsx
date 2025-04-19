@@ -9,7 +9,13 @@ import { OfferData } from '../../types/offers';
 import { names } from '../../mock/names';
 import { getRandomNum } from '../../utils/common';
 import { useAppSelector } from '../../hooks';
-import { sortingByType } from '../../utils/common';
+
+import {
+  fetchSelectedOffersAction,
+  fetchNearbyOfferAction,
+} from '../../store/api-actions';
+import { store } from '../../store/store';
+
 type OfferProps = {
   rating: number;
   text: string;
@@ -28,16 +34,28 @@ function Offer(): JSX.Element {
       name: names[getRandomNum(0, 7)],
     },
   ]);
-  const [offersFiltered, setOffersFiltered] = useState<OfferData[]>([]);
-  const currentCity = useAppSelector((state) => state.city);
-  const sortingType = useAppSelector((state) => state.sortingBy);
-  const offers = useAppSelector((state) => state.offers);
-  useEffect(() => {
-    let filtered = offers.filter((offer) => offer.city.name === currentCity);
-    filtered = sortingByType(sortingType, filtered);
-    setOffersFiltered(filtered);
-  }, [offers, currentCity, sortingType]);
+
+  const [selectOffer, setSelectOffer] = useState<OfferData | null>(null);
+  const [nearbyOffers, setNearbyOffers] = useState<OfferData[] | undefined>(
+    undefined
+  );
+
   const [hoveredOfferID, setHoveredOfferID] = useState('');
+
+  const offers = useAppSelector((state) => state.offers);
+
+  const { id } = useParams();
+  useEffect(() => {
+    store
+      .dispatch(fetchSelectedOffersAction({ offerID: id }))
+      .unwrap()
+      .then((data) => setSelectOffer(data));
+    store
+      .dispatch(fetchNearbyOfferAction({ offerID: id }))
+      .unwrap()
+      .then((data) => setNearbyOffers(data));
+  }, [id]);
+
   const addReview = (newReview: Omit<OfferProps, 'id' | 'name'>) => {
     const reviewWithId = {
       ...newReview,
@@ -47,15 +65,6 @@ function Offer(): JSX.Element {
     setReviews([...reviews, reviewWithId]);
   };
 
-  const { id } = useParams();
-
-  const selectedOffer: OfferData | undefined = offersFiltered.find(
-    (offer) => offer.id === id
-  );
-
-  const nearestOffers = offersFiltered.filter(
-    (offer) => offer.id !== selectedOffer?.id
-  );
   return (
     <div className="page">
       <header className="header">
@@ -148,10 +157,10 @@ function Offer(): JSX.Element {
           <div className="offer__container container">
             <div className="offer__wrapper">
               <div className="offer__mark">
-                <span>{selectedOffer?.isPremium}</span>
+                <span>{selectOffer?.isPremium}</span>
               </div>
               <div className="offer__name-wrapper">
-                <h1 className="offer__name">{selectedOffer?.title}</h1>
+                <h1 className="offer__name">{selectOffer?.title}</h1>
                 <button className="offer__bookmark-button button" type="button">
                   <svg className="offer__bookmark-icon" width="31" height="33">
                     <use xlinkHref="#icon-bookmark"></use>
@@ -164,17 +173,14 @@ function Offer(): JSX.Element {
                   <span
                     style={{
                       width: `${
-                        selectedOffer?.rating
-                          ? selectedOffer?.rating * 20
-                          : 20 * 3
+                        selectOffer?.rating ? selectOffer?.rating * 20 : 20 * 3
                       }%`,
                     }}
-                  >
-                  </span>
+                  ></span>
                   <span className="visually-hidden">Rating</span>
                 </div>
                 <span className="offer__rating-value rating__value">
-                  {selectedOffer?.rating}
+                  {selectOffer?.rating}
                 </span>
               </div>
               <ul className="offer__features">
@@ -190,7 +196,7 @@ function Offer(): JSX.Element {
               </ul>
               <div className="offer__price">
                 <b className="offer__price-value">
-                  &euro; {selectedOffer?.price}
+                  &euro; {selectOffer?.price}
                 </b>
                 <span className="offer__price-text">&nbsp;night</span>
               </div>
@@ -248,7 +254,7 @@ function Offer(): JSX.Element {
             </div>
           </div>
           <Map
-            nearestOffers={nearestOffers}
+            nearestOffers={nearbyOffers}
             cityLocation={offers[0].location}
             hoveredID={hoveredOfferID}
             height="579px"
@@ -262,7 +268,7 @@ function Offer(): JSX.Element {
               Other places in the neighbourhood
             </h2>
             <div className="near-places__list places__list">
-              {nearestOffers.map((offer) => (
+              {nearbyOffers?.map((offer) => (
                 <Card
                   key={offer.id}
                   offer={offer}

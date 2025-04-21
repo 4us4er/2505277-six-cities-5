@@ -15,9 +15,7 @@ function ReviewsItem({ review }: ReviewsItemProps): JSX.Element {
             src={
               review.user
                 ? review.user.avatarUrl
-                : `img/avatar-${
-                    review.name.length > 4 ? 'max' : 'angelina'
-                  }.jpg`
+                : `img/avatar-${review.name.length > 4 ? 'max' : 'angelina'}.jpg`
             }
             width="54"
             height="54"

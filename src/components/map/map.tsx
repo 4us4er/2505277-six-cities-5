@@ -79,7 +79,8 @@ function Map({
     <div
       style={{ height, width, margin: 'auto', marginBottom }}
       ref={mapRef}
-    ></div>
+    >
+    </div>
   );
 }
 export { Map, type MapProps };

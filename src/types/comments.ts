@@ -4,7 +4,7 @@ export type Comments = {
   date: string;
   id: string;
   name: string;
-  user: {
+  user?: {
     name: string;
     avatarUrl: string;
   };

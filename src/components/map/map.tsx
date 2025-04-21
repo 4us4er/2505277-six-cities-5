@@ -5,6 +5,8 @@ import { defaulCustomIcon, activeCustomIcon } from '../../const/map';
 import leaflet from 'leaflet';
 import { useAppSelector } from '../../hooks';
 import { sortingByType } from '../../utils/common';
+import { getCurrentCity, getSortingType } from '../../store/app-data/selectors';
+import { getOffers } from '../../store/offers-data/selectors';
 
 type MapProps = {
   nearestOffers?: OfferData[];
@@ -25,9 +27,9 @@ function Map({
   const mapRef = useRef<HTMLDivElement>(null);
   const map = useMap(mapRef, cityLocation);
   const [offersFiltered, setOffersFiltered] = useState<OfferData[]>([]);
-  const currentCity = useAppSelector((state) => state.city);
-  const sortingType = useAppSelector((state) => state.sortingBy);
-  const offers = useAppSelector((state) => state.offers);
+  const currentCity = useAppSelector(getCurrentCity);
+  const sortingType = useAppSelector(getSortingType);
+  const offers = useAppSelector(getOffers);
   useEffect(() => {
     let filtered = offers.filter((offer) => offer.city.name === currentCity);
     filtered = sortingByType(sortingType, filtered);
@@ -77,8 +79,7 @@ function Map({
     <div
       style={{ height, width, margin: 'auto', marginBottom }}
       ref={mapRef}
-    >
-    </div>
+    ></div>
   );
 }
 export { Map, type MapProps };

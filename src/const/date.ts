@@ -1,5 +1,5 @@
 function getFormatDate(date: string): string {
-  const newDate = new Date(`${date}T00:00:00`);
+  const newDate = new Date(`${date}`);
 
   const options: Intl.DateTimeFormatOptions = {
     month: 'long',

@@ -5,46 +5,58 @@ import { ReviewsList } from '../../components/reviews-list/reviews-list';
 
 import { Map } from '../../components/map/map';
 import { Card } from '../../components/card/сard';
-import { OfferData } from '../../types/offers';
+import { OfferData, SelectedOffer } from '../../types/offers';
 import { names } from '../../mock/names';
 import { getRandomNum } from '../../utils/common';
 import { useAppSelector } from '../../hooks';
-
+import { Comments } from '../../types/comments';
 import {
   fetchSelectedOffersAction,
   fetchNearbyOfferAction,
+  fetchCommentsAction,
 } from '../../store/api-actions';
 import { store } from '../../store/store';
-
-type OfferProps = {
-  rating: number;
-  text: string;
-  date: string;
-  id: string;
-  name: string;
-};
+import { getOffers } from '../../store/offers-data/selectors';
 
 function Offer(): JSX.Element {
-  const [reviews, setReviews] = useState<OfferProps[]>([
-    {
-      rating: 4,
-      text: 'Great place to stay!',
-      date: '2024-03-22',
-      id: '1',
-      name: names[getRandomNum(0, 7)],
-    },
-  ]);
+  const [reviews, setReviews] = useState<Comments[]>([]);
+  const [localReviews, setlocalReviews] = useState<Comments[]>([]);
 
-  const [selectOffer, setSelectOffer] = useState<OfferData | null>(null);
+  const [selectOffer, setSelectOffer] = useState<SelectedOffer | null>(null);
   const [nearbyOffers, setNearbyOffers] = useState<OfferData[] | undefined>(
     undefined
   );
 
   const [hoveredOfferID, setHoveredOfferID] = useState('');
 
-  const offers = useAppSelector((state) => state.offers);
+  const offers = useAppSelector(getOffers);
 
   const { id } = useParams();
+
+  useEffect(() => {
+    let parsedLocal: Comments[] = [];
+    const savedLocal: string | null = localStorage.getItem(
+      `local-comments-${id}`
+    );
+    if (savedLocal) {
+      parsedLocal = JSON.parse(savedLocal) as Comments[];
+      setlocalReviews(parsedLocal);
+    }
+
+    store
+      .dispatch(fetchCommentsAction({ offerID: id }))
+      .unwrap()
+      .then((data) => {
+        const merged = [
+          ...data,
+          ...parsedLocal.filter(
+            (local) => !data.some((server) => server.id === local.id)
+          ),
+        ];
+        setReviews(merged);
+      });
+  }, [id]);
+
   useEffect(() => {
     store
       .dispatch(fetchSelectedOffersAction({ offerID: id }))
@@ -56,13 +68,16 @@ function Offer(): JSX.Element {
       .then((data) => setNearbyOffers(data));
   }, [id]);
 
-  const addReview = (newReview: Omit<OfferProps, 'id' | 'name'>) => {
+  const addReview = (newReview: Omit<Comments, 'id' | 'name'>) => {
     const reviewWithId = {
       ...newReview,
       id: Date.now().toString(),
       name: names[getRandomNum(0, 7)],
     };
-    setReviews([...reviews, reviewWithId]);
+    const updatedLocal = [...localReviews, reviewWithId];
+    setlocalReviews(updatedLocal);
+    setReviews((prev) => [...prev, reviewWithId]);
+    localStorage.setItem(`local-comments-${id}`, JSON.stringify(updatedLocal));
   };
 
   return (
@@ -110,48 +125,15 @@ function Offer(): JSX.Element {
         <section className="offer">
           <div className="offer__gallery-container container">
             <div className="offer__gallery">
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/room.jpg"
-                  alt="Photo studio"
-                />
-              </div>
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/apartment-01.jpg"
-                  alt="Photo studio"
-                />
-              </div>
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/apartment-02.jpg"
-                  alt="Photo studio"
-                />
-              </div>
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/apartment-03.jpg"
-                  alt="Photo studio"
-                />
-              </div>
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/studio-01.jpg"
-                  alt="Photo studio"
-                />
-              </div>
-              <div className="offer__image-wrapper">
-                <img
-                  className="offer__image"
-                  src="img/apartment-01.jpg"
-                  alt="Photo studio"
-                />
-              </div>
+              {selectOffer?.images.map((image) => (
+                <div key={image} className="offer__image-wrapper">
+                  <img
+                    className="offer__image"
+                    src={image}
+                    alt="Photo studio"
+                  />
+                </div>
+              ))}
             </div>
           </div>
           <div className="offer__container container">

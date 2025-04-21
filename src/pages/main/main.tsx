@@ -4,12 +4,12 @@ import { AuthorizationStatus } from '../../const/auth';
 import { logoutAction } from '../../store/api-actions';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { Link } from 'react-router-dom';
+import { getAuthorizatinStatus } from '../../store/user-process/selectors';
+
 function Main(): JSX.Element {
-  const authorizationStatus = useAppSelector(
-    (state) => state.authorizationStatus
-  );
+  const authorizationStatus = useAppSelector(getAuthorizatinStatus);
   const dispatch = useAppDispatch();
-  const email = useAppSelector((state) => state.userEmail);
+  const email = localStorage.getItem('userEmail');
   return (
     <div className="page page--gray page--main">
       <header className="header">

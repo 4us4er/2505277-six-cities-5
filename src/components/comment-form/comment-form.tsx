@@ -1,7 +1,16 @@
 import { useState, Fragment } from 'react';
 
 type CommentFormProps = {
-  onAddReview: (review: { rating: number; text: string; date: string }) => void;
+  onAddReview: (review: {
+    rating: number;
+    comment: string;
+    date: string;
+    user?: {
+      name: 'Anonymous';
+      avatarUrl: '';
+      isPro: false;
+    };
+  }) => void;
 };
 function CommentForm({ onAddReview }: CommentFormProps): JSX.Element {
   const [comment, setComment] = useState('');
@@ -16,7 +25,7 @@ function CommentForm({ onAddReview }: CommentFormProps): JSX.Element {
 
     onAddReview({
       rating,
-      text: comment,
+      comment: comment,
       date: new Date().toISOString().split('T')[0],
     });
 

@@ -4,7 +4,6 @@ import { Favorites } from '../../pages/favorites/favorites';
 import { Offer } from '../../pages/offer/offer';
 import { NotFoundScreen } from '../../pages/not-found-screen/not-found-screen';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { AuthorizationStatus } from '../../const/auth';
 import { AppRoute } from '../../const/routes';
 import { PrivateRouteComponent } from '../private-route/private-route';
 import { useAppSelector } from '../../hooks';
@@ -16,24 +15,18 @@ import {
 } from '../../store/api-actions';
 import { store } from '../../store/store';
 import { useEffect } from 'react';
-
+import { getAuthCheckedStatus } from '../../store/user-process/selectors';
+import { getOffersDataLoadingStatus } from '../../store/offers-data/selectors';
 function App(): JSX.Element {
-  const authorizationStatus = useAppSelector(
-    (state) => state.authorizationStatus
-  );
+  const isAuthChecked = useAppSelector(getAuthCheckedStatus);
 
   useEffect(() => {
     store.dispatch(fetchOffersAction());
     store.dispatch(fetchFavoritesAction());
     store.dispatch(checkAuthAction());
   }, []);
-  const isOffersDataLoading = useAppSelector(
-    (state) => state.isOffersDataLoading
-  );
-  if (
-    authorizationStatus === AuthorizationStatus.Unknown ||
-    isOffersDataLoading
-  ) {
+  const isOffersDataLoading = useAppSelector(getOffersDataLoadingStatus);
+  if (!isAuthChecked || isOffersDataLoading) {
     return <LoadingScreen />;
   }
   return (

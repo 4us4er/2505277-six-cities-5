@@ -1,13 +1,14 @@
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { sortingOptions } from '../../mock/sorting';
-import { changeSortingType } from '../../store/action';
+import { changeSortingType } from '../../store/app-data/app-data';
 import { Dispatch, SetStateAction } from 'react';
+import { getSortingType } from '../../store/app-data/selectors';
 
 type SortingItemProps = {
   setOpened: Dispatch<SetStateAction<boolean>>;
 };
 function SortingOptionsItem({ setOpened }: SortingItemProps): JSX.Element {
-  const sortingType = useAppSelector((state) => state.sortingBy);
+  const sortingType = useAppSelector(getSortingType);
   const dispatch = useAppDispatch();
   return (
     <>

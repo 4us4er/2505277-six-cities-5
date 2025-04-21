@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom';
 import { FavoritesCard } from '../../components/favorites-card/favorites-card';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { logoutAction } from '../../store/api-actions';
+import { getFavorites } from '../../store/offers-favorite-data/selectors';
 
 function Favorites(): JSX.Element {
-  const favorites = useAppSelector((state) => state.favorite);
+  const favorites = useAppSelector(getFavorites);
   const email = localStorage.getItem('userEmail');
   const dispatch = useAppDispatch();
   return (

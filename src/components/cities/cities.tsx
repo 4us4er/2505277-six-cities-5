@@ -7,14 +7,17 @@ import { useAppSelector } from '../../hooks';
 import { useEffect } from 'react';
 import { OfferData } from '../../types/offers';
 import { sortingByType } from '../../utils/common';
+import { getCurrentCity, getSortingType } from '../../store/app-data/selectors';
+import { getOffers } from '../../store/offers-data/selectors';
+
 function Cities(): JSX.Element {
   const [hoveredID, setHoveredID] = useState('');
   const [offersFiltered, setOffersFiltered] = useState<OfferData[]>([]);
-  const city = useAppSelector((state) => state.city);
+  const city = useAppSelector(getCurrentCity);
 
-  const currentCity = useAppSelector((state) => state.city);
-  const sortingType = useAppSelector((state) => state.sortingBy);
-  const offers = useAppSelector((state) => state.offers);
+  const currentCity = useAppSelector(getCurrentCity);
+  const sortingType = useAppSelector(getSortingType);
+  const offers = useAppSelector(getOffers);
   useEffect(() => {
     let filtered = offers.filter((offer) => offer.city.name === currentCity);
     filtered = sortingByType(sortingType, filtered);

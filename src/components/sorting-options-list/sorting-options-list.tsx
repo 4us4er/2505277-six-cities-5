@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useAppSelector } from '../../hooks';
 
 import { SortingOptionsItem } from '../sorting-options-item/sorting-options-item';
+import { getSortingType } from '../../store/app-data/selectors';
 function SortingOptionsList(): JSX.Element {
-  const sortingType = useAppSelector((state) => state.sortingBy);
+  const sortingType = useAppSelector(getSortingType);
   const [opened, setOpened] = useState(false);
 
   return (

@@ -1,9 +1,9 @@
 import { MouseEvent, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks';
 import { loginAction } from '../../store/api-actions';
 import { AppRoute } from '../../const/routes';
-
+import { HeaderLeft } from '../../components/header-left/header-left';
 function Login(): JSX.Element {
   const loginRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
@@ -27,17 +27,7 @@ function Login(): JSX.Element {
       <header className="header">
         <div className="container">
           <div className="header__wrapper">
-            <div className="header__left">
-              <Link className="header__logo-link" to="/">
-                <img
-                  className="header__logo"
-                  src="img/logo.svg"
-                  alt="6 cities logo"
-                  width="81"
-                  height="41"
-                />
-              </Link>
-            </div>
+            <HeaderLeft />
           </div>
         </div>
       </header>

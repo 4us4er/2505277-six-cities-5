@@ -1,28 +1,35 @@
 import { Card } from '../card/сard';
 import { appendSForPlural } from '../../utils/common';
 import { SortingOptionsList } from '../sorting-options-list/sorting-options-list';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Map } from '../map/map';
 import { useAppSelector } from '../../hooks';
-import { useEffect } from 'react';
-import { OfferData } from '../../types/offers';
 import { sortingByType } from '../../utils/common';
 import { getCurrentCity, getSortingType } from '../../store/app-data/selectors';
 import { getOffers } from '../../store/offers-data/selectors';
 
 function Cities(): JSX.Element {
   const [hoveredID, setHoveredID] = useState('');
-  const [offersFiltered, setOffersFiltered] = useState<OfferData[]>([]);
+
   const city = useAppSelector(getCurrentCity);
 
   const currentCity = useAppSelector(getCurrentCity);
   const sortingType = useAppSelector(getSortingType);
   const offers = useAppSelector(getOffers);
-  useEffect(() => {
-    let filtered = offers.filter((offer) => offer.city.name === currentCity);
-    filtered = sortingByType(sortingType, filtered);
-    setOffersFiltered(filtered);
+
+  const handleMouseLeave = useCallback(() => {
+    setHoveredID('');
+  }, []);
+
+  const handleMouseEnter = useCallback((id: string) => {
+    setHoveredID(id);
+  }, []);
+
+  const offersFiltered = useMemo(() => {
+    const filtered = offers.filter((offer) => offer.city.name === currentCity);
+    return sortingByType(sortingType, filtered);
   }, [offers, currentCity, sortingType]);
+
   return (
     <div className="cities">
       <div className="cities__places-container container">
@@ -39,8 +46,8 @@ function Cities(): JSX.Element {
               <Card
                 key={offer.id}
                 offer={offer}
-                onMouseLeave={() => setHoveredID('')}
-                onMouseEnter={() => setHoveredID(offer.id)}
+                onMouseLeave={handleMouseLeave}
+                onMouseEnter={() => handleMouseEnter(offer.id)}
                 classPrefix="cities"
               />
             ))}

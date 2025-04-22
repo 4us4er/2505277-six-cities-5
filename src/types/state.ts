@@ -20,6 +20,7 @@ export type AppData = {
   city: string;
   sortingBy: string;
   error: string | null;
+  isLoading: Record<string, boolean>;
 };
 
 export type State = ReturnType<typeof store.getState>;

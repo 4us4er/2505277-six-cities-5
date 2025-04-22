@@ -2,19 +2,15 @@ import { Link } from 'react-router-dom';
 import { OfferData } from '../../types/offers';
 import { store } from '../../store/store';
 import { changeStatus } from '../../store/api-actions';
-
-type CardProps = {
+import React from 'react';
+export type CardProps = {
   offer: OfferData;
   onMouseLeave?: () => void;
   onMouseEnter?: () => void;
   classPrefix?: string;
 };
-function Card({
-  offer,
-  onMouseEnter,
-  onMouseLeave,
-  classPrefix,
-}: CardProps): JSX.Element {
+
+function Card({ offer, onMouseEnter, onMouseLeave, classPrefix }: CardProps) {
   const handleClick = () => {
     window.scrollTo(0, 0);
   };
@@ -84,4 +80,7 @@ function Card({
     </article>
   );
 }
-export { Card, type CardProps };
+
+const MemoizedCard = React.memo(Card);
+
+export { MemoizedCard as Card };

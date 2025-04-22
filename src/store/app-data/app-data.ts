@@ -6,6 +6,7 @@ const initialState: AppData = {
   city: 'Paris',
   sortingBy: 'Popular',
   error: null,
+  isLoading: {},
 };
 
 const appData = createSlice({
@@ -24,4 +25,5 @@ const appData = createSlice({
   },
 });
 export const { changeCity, setError, changeSortingType } = appData.actions;
+
 export { appData };

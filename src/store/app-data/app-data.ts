@@ -1,4 +1,4 @@
-import { NameSpace } from '../../const/namespaces';
+import { AppNamespace } from '../../const/appnamespaces';
 import { AppData } from '../../types/state';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -10,7 +10,7 @@ const initialState: AppData = {
 };
 
 const appData = createSlice({
-  name: NameSpace.App,
+  name: AppNamespace.App,
   initialState,
   reducers: {
     changeCity: (state, action: PayloadAction<string>) => {

@@ -1,4 +1,4 @@
-export enum NameSpace {
+export enum AppNamespace{
   Data = 'DATA',
   User = 'USER',
   App = 'APP',

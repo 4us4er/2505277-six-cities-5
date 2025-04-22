@@ -1,7 +1,7 @@
-import { NameSpace } from '../../const/namespaces';
+import { AppNamespace } from '../../const/appnamespaces';
 import { State } from '../../types/state';
 
 const getFavorites = (state: State) =>
-  state[NameSpace.Data].favorites.favorites;
+  state[AppNamespace.Data].favorites.favorites;
 
 export { getFavorites };

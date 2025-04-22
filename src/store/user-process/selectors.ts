@@ -1,13 +1,13 @@
-import { NameSpace } from '../../const/namespaces';
+import { AppNamespace } from '../../const/appnamespaces';
 import { State } from '../../types/state';
 import { AuthorizationStatus } from '../../const/auth';
 
 const getAuthorizatinStatus = (state: State): AuthorizationStatus =>
-  state[NameSpace.User].authorizationStatus;
+  state[AppNamespace.User].authorizationStatus;
 
 const getAuthCheckedStatus = (state: State): boolean =>
-  state[NameSpace.User].authorizationStatus !== AuthorizationStatus.Unknown;
+  state[AppNamespace.User].authorizationStatus !== AuthorizationStatus.Unknown;
 
-const getUserEmail = (state: State): string => state[NameSpace.User].userEmail;
+const getUserEmail = (state: State): string => state[AppNamespace.User].userEmail;
 
 export { getAuthorizatinStatus, getAuthCheckedStatus, getUserEmail };

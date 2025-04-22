@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthorizationStatus } from '../../const/auth';
 import { UserProcess } from '../../types/state';
-import { NameSpace } from '../../const/namespaces';
+import { AppNamespace } from '../../const/appnamespaces';
 import { loginAction, checkAuthAction, logoutAction } from '../api-actions';
 
 const initialState: UserProcess = {
@@ -10,7 +10,7 @@ const initialState: UserProcess = {
 };
 
 const userProcess = createSlice({
-  name: NameSpace.User,
+  name: AppNamespace.User,
   initialState,
   reducers: {
     setUserEmail: (state, action: PayloadAction<string>) => {

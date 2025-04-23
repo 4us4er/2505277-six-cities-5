@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAppSelector } from '../../hooks';
 
 import { SortingOptionsItem } from '../sorting-options-item/sorting-options-item';
@@ -31,4 +31,5 @@ function SortingOptionsList(): JSX.Element {
     </form>
   );
 }
-export { SortingOptionsList };
+const MemoizedSortList = React.memo(SortingOptionsList);
+export { MemoizedSortList as SortingOptionsList };

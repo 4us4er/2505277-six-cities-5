@@ -2,12 +2,14 @@ import { FavoritesCard } from '../../components/favorites-card/favorites-card';
 import { useAppSelector } from '../../hooks';
 import { getFavorites } from '../../store/offers-favorite-data/selectors';
 import { Header } from '../../components/header/header';
+import { useMemo } from 'react';
 
 function Favorites(): JSX.Element {
   const favorites = useAppSelector(getFavorites);
+  const memorizedHeader = useMemo(()=> <Header />,[]);
   return (
     <div className="page">
-      <Header />
+      {memorizedHeader}
       <main className="page__main page__main--favorites">
         <div className="page__favorites-container container">
           <section className="favorites">

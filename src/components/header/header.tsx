@@ -5,6 +5,7 @@ import { logoutAction } from '../../store/api-actions';
 import { AuthorizationStatus } from '../../const/auth';
 import { HeaderLeft } from '../header-left/header-left';
 
+
 function Header(): JSX.Element {
   const authorizationStatus = useAppSelector(getAuthorizatinStatus);
   const dispatch = useAppDispatch();
@@ -67,4 +68,5 @@ function Header(): JSX.Element {
   );
 }
 
-export { Header };
+// const MemoizedHeader = React.memo(Header);
+export { Header} ;

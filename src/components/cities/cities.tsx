@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Map } from '../map/map';
+import { OffersMap } from '../map/map';
 import { Card } from '../card/сard';
 import { useAppSelector } from '../../hooks';
 import { appendSForPlural } from '../../utils/common';
@@ -50,7 +50,7 @@ function Cities(): JSX.Element {
           </div>
         </section>
         <div className="cities__right-section">
-          <Map
+          <OffersMap
             cityLocation={{
               latitude: 52.3909553943508,
               longitude: 4.85309666406198,

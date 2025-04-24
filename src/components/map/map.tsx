@@ -1,5 +1,5 @@
 import { useMap } from '../../hooks/useMap';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { LocationData, OfferData } from '../../types/offers';
 import { defaulCustomIcon, activeCustomIcon } from '../../const/map';
 import leaflet from 'leaflet';
@@ -16,7 +16,8 @@ type MapProps = {
   width: string;
   marginBottom: string;
 };
-function Map({
+
+function OffersMap({
   nearestOffers,
   height = '794px',
   width = '500px',
@@ -26,46 +27,64 @@ function Map({
 }: MapProps): JSX.Element {
   const mapRef = useRef<HTMLDivElement>(null);
   const map = useMap(mapRef, cityLocation);
-  const [offersFiltered, setOffersFiltered] = useState<OfferData[]>([]);
+
   const currentCity = useAppSelector(getCurrentCity);
   const sortingType = useAppSelector(getSortingType);
   const offers = useAppSelector(getOffers);
-  useEffect(() => {
-    let filtered = offers.filter((offer) => offer.city.name === currentCity);
-    filtered = sortingByType(sortingType, filtered);
-    setOffersFiltered(filtered);
+  const markerRef = useRef<Map<string, leaflet.Marker>>(new Map());
+
+  const offersFiltered = useMemo(() => {
+    const filtered = offers.filter((offer) => offer.city.name === currentCity);
+    return sortingByType(sortingType, filtered);
   }, [offers, currentCity, sortingType]);
+
   useEffect(() => {
     if (!map) {
       return;
     }
+
     const markers = leaflet.layerGroup();
     const dataToRender = nearestOffers?.length ? nearestOffers : offersFiltered;
 
+    if (!dataToRender || dataToRender.length === 0) {
+      return;
+    }
+    const newMarkerMap = new Map<string, leaflet.Marker>();
+
     dataToRender.forEach((offer) => {
-      leaflet
+      const marker = leaflet
         .marker(
           {
             lat: offer.location.latitude,
             lng: offer.location.longitude,
           },
           {
-            icon: offer.id === hoveredID ? activeCustomIcon : defaulCustomIcon,
+            icon: defaulCustomIcon,
           }
         )
         .addTo(markers);
+      newMarkerMap.set(offer.id, marker);
     });
 
     markers.addTo(map);
+    markerRef.current = newMarkerMap;
 
     return () => {
       markers.clearLayers();
       map.removeLayer(markers);
     };
-  }, [map, nearestOffers, offersFiltered, hoveredID]);
+  }, [map, nearestOffers, offersFiltered]);
 
   useEffect(() => {
-    if (map) {
+    if (markerRef.current.size > 0) {
+      markerRef.current.forEach((marker, id) => {
+        marker.setIcon(id === hoveredID ? activeCustomIcon : defaulCustomIcon);
+      });
+    }
+  }, [hoveredID]);
+
+  useEffect(() => {
+    if (map && offersFiltered.length > 0) {
       map.setView(
         [
           offersFiltered[0].location.latitude,
@@ -83,4 +102,4 @@ function Map({
     </div>
   );
 }
-export { Map, type MapProps };
+export { OffersMap, type MapProps };

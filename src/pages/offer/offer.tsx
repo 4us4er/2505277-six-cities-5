@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { store } from '../../store/store';
 import { useAppSelector } from '../../hooks';
-import { Map } from '../../components/map/map';
+import { OffersMap } from '../../components/map/map';
 import { Comments } from '../../types/comments';
 import { Card } from '../../components/card/сard';
 import { Header } from '../../components/header/header';
@@ -64,9 +64,11 @@ function Offer(): JSX.Element {
       .then((data) => setNearbyOffers(data));
   }, [id]);
 
+  const memorizedHeader = useMemo(()=> <Header />,[]);
+  
   return (
     <div className="page">
-      <Header />
+      {memorizedHeader}
       <main className="page__main page__main--offer">
         <section className="offer">
           <div className="offer__gallery-container container">
@@ -182,7 +184,7 @@ function Offer(): JSX.Element {
               </section>
             </div>
           </div>
-          <Map
+          <OffersMap
             nearestOffers={nearbyOffers}
             cityLocation={offers[0].location}
             hoveredID={hoveredOfferID}

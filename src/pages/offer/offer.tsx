@@ -1,20 +1,20 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { CommentForm } from '../../components/comment-form/comment-form';
-import { ReviewsList } from '../../components/reviews-list/reviews-list';
-import { Map } from '../../components/map/map';
-import { Card } from '../../components/card/сard';
-import { OfferData, SelectedOffer } from '../../types/offers';
+import { store } from '../../store/store';
 import { useAppSelector } from '../../hooks';
+import { Map } from '../../components/map/map';
 import { Comments } from '../../types/comments';
+import { Card } from '../../components/card/сard';
+import { Header } from '../../components/header/header';
+import { getOffers } from '../../store/offers-data/selectors';
+import { OfferData, SelectedOffer } from '../../types/offers';
+import { ReviewsList } from '../../components/reviews-list/reviews-list';
+import { CommentForm } from '../../components/comment-form/comment-form';
 import {
   fetchSelectedOffersAction,
   fetchNearbyOfferAction,
   fetchCommentsAction,
 } from '../../store/api-actions';
-import { store } from '../../store/store';
-import { getOffers } from '../../store/offers-data/selectors';
-import { Header } from '../../components/header/header';
 
 function Offer(): JSX.Element {
   const [reviews, setReviews] = useState<Comments[]>([]);
@@ -30,26 +30,18 @@ function Offer(): JSX.Element {
 
   const { id } = useParams();
 
-  const handleMouseLeave = useCallback(() => {
-    setHoveredOfferID('');
-  }, []);
-
-  const handleMouseEnter = useCallback(
-    (ID: string) => () => setHoveredOfferID(ID),
-    []
-  );
   const nearbyList = useMemo(
     () =>
       nearbyOffers?.map((offer) => (
         <Card
           key={offer.id}
           offer={offer}
-          onMouseLeave={handleMouseLeave}
-          onMouseEnter={handleMouseEnter(offer.id)}
+          onMouseLeave={()=> setHoveredOfferID('')}
+          onMouseEnter={()=>setHoveredOfferID(offer.id)}
           classPrefix="near-places"
         />
       )),
-    [nearbyOffers, handleMouseLeave, handleMouseEnter]
+    [nearbyOffers]
   );
 
   useEffect(() => {

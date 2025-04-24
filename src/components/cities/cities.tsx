@@ -1,12 +1,12 @@
-import { Card } from '../card/сard';
-import { appendSForPlural } from '../../utils/common';
-import { SortingOptionsList } from '../sorting-options-list/sorting-options-list';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Map } from '../map/map';
+import { Card } from '../card/сard';
 import { useAppSelector } from '../../hooks';
+import { appendSForPlural } from '../../utils/common';
 import { sortingByType } from '../../utils/common';
-import { getCurrentCity, getSortingType } from '../../store/app-data/selectors';
 import { getOffers } from '../../store/offers-data/selectors';
+import { getCurrentCity, getSortingType } from '../../store/app-data/selectors';
+import { SortingOptionsList } from '../sorting-options-list/sorting-options-list';
 
 function Cities(): JSX.Element {
   const [hoveredID, setHoveredID] = useState('');
@@ -15,15 +15,6 @@ function Cities(): JSX.Element {
   const currentCity = useAppSelector(getCurrentCity);
   const sortingType = useAppSelector(getSortingType);
   const offers = useAppSelector(getOffers);
-
-  const handleMouseLeave = useCallback(() => {
-    setHoveredID('');
-  }, []);
-
-  const handleMouseEnter = useCallback(
-    (id: string) => () => setHoveredID(id),
-    []
-  );
 
   const offersFiltered = useMemo(() => {
     const filtered = offers.filter((offer) => offer.city.name === currentCity);
@@ -36,12 +27,12 @@ function Cities(): JSX.Element {
         <Card
           key={offer.id}
           offer={offer}
-          onMouseLeave={handleMouseLeave}
-          onMouseEnter={handleMouseEnter(offer.id)}
+          onMouseLeave={()=>setHoveredID('')}
+          onMouseEnter={()=>setHoveredID(offer.id)}
           classPrefix="cities"
         />
       )),
-    [offersFiltered, handleMouseLeave, handleMouseEnter]
+    [offersFiltered]
   );
   return (
     <div className="cities">

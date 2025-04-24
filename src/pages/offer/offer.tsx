@@ -1,12 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { CommentForm } from '../../components/comment-form/comment-form';
 import { ReviewsList } from '../../components/reviews-list/reviews-list';
-
 import { Map } from '../../components/map/map';
 import { Card } from '../../components/card/сard';
 import { OfferData, SelectedOffer } from '../../types/offers';
-
 import { useAppSelector } from '../../hooks';
 import { Comments } from '../../types/comments';
 import {
@@ -31,6 +29,28 @@ function Offer(): JSX.Element {
   const offers = useAppSelector(getOffers);
 
   const { id } = useParams();
+
+  const handleMouseLeave = useCallback(() => {
+    setHoveredOfferID('');
+  }, []);
+
+  const handleMouseEnter = useCallback(
+    (ID: string) => () => setHoveredOfferID(ID),
+    []
+  );
+  const nearbyList = useMemo(
+    () =>
+      nearbyOffers?.map((offer) => (
+        <Card
+          key={offer.id}
+          offer={offer}
+          onMouseLeave={handleMouseLeave}
+          onMouseEnter={handleMouseEnter(offer.id)}
+          classPrefix="near-places"
+        />
+      )),
+    [nearbyOffers, handleMouseLeave, handleMouseEnter]
+  );
 
   useEffect(() => {
     store
@@ -92,8 +112,7 @@ function Offer(): JSX.Element {
                         selectOffer?.rating ? selectOffer?.rating * 20 : 20 * 3
                       }%`,
                     }}
-                  >
-                  </span>
+                  ></span>
                   <span className="visually-hidden">Rating</span>
                 </div>
                 <span className="offer__rating-value rating__value">
@@ -184,17 +203,7 @@ function Offer(): JSX.Element {
             <h2 className="near-places__title">
               Other places in the neighbourhood
             </h2>
-            <div className="near-places__list places__list">
-              {nearbyOffers?.map((offer) => (
-                <Card
-                  key={offer.id}
-                  offer={offer}
-                  onMouseLeave={() => setHoveredOfferID('')}
-                  onMouseEnter={() => setHoveredOfferID(offer.id)}
-                  classPrefix="near-places"
-                />
-              ))}
-            </div>
+            <div className="near-places__list places__list">{nearbyList}</div>
           </section>
         </div>
       </main>

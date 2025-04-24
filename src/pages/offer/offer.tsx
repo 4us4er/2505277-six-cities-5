@@ -6,8 +6,7 @@ import { ReviewsList } from '../../components/reviews-list/reviews-list';
 import { Map } from '../../components/map/map';
 import { Card } from '../../components/card/сard';
 import { OfferData, SelectedOffer } from '../../types/offers';
-import { names } from '../../mock/names';
-import { getRandomNum } from '../../utils/common';
+
 import { useAppSelector } from '../../hooks';
 import { Comments } from '../../types/comments';
 import {
@@ -21,7 +20,6 @@ import { Header } from '../../components/header/header';
 
 function Offer(): JSX.Element {
   const [reviews, setReviews] = useState<Comments[]>([]);
-  const [localReviews, setlocalReviews] = useState<Comments[]>([]);
 
   const [selectOffer, setSelectOffer] = useState<SelectedOffer | null>(null);
   const [nearbyOffers, setNearbyOffers] = useState<OfferData[] | undefined>(
@@ -35,26 +33,11 @@ function Offer(): JSX.Element {
   const { id } = useParams();
 
   useEffect(() => {
-    let parsedLocal: Comments[] = [];
-    const savedLocal: string | null = localStorage.getItem(
-      `local-comments-${id}`
-    );
-    if (savedLocal) {
-      parsedLocal = JSON.parse(savedLocal) as Comments[];
-      setlocalReviews(parsedLocal);
-    }
-
     store
       .dispatch(fetchCommentsAction({ offerID: id }))
       .unwrap()
       .then((data) => {
-        const merged = [
-          ...data,
-          ...parsedLocal.filter(
-            (local) => !data.some((server) => server.id === local.id)
-          ),
-        ];
-        setReviews(merged);
+        setReviews(data);
       });
   }, [id]);
 
@@ -68,18 +51,6 @@ function Offer(): JSX.Element {
       .unwrap()
       .then((data) => setNearbyOffers(data));
   }, [id]);
-
-  const addReview = (newReview: Omit<Comments, 'id' | 'name'>) => {
-    const reviewWithId = {
-      ...newReview,
-      id: Date.now().toString(),
-      name: names[getRandomNum(0, 7)],
-    };
-    const updatedLocal = [...localReviews, reviewWithId];
-    setlocalReviews(updatedLocal);
-    setReviews((prev) => [...prev, reviewWithId]);
-    localStorage.setItem(`local-comments-${id}`, JSON.stringify(updatedLocal));
-  };
 
   return (
     <div className="page">
@@ -121,8 +92,7 @@ function Offer(): JSX.Element {
                         selectOffer?.rating ? selectOffer?.rating * 20 : 20 * 3
                       }%`,
                     }}
-                  >
-                  </span>
+                  ></span>
                   <span className="visually-hidden">Rating</span>
                 </div>
                 <span className="offer__rating-value rating__value">
@@ -195,7 +165,7 @@ function Offer(): JSX.Element {
                   <span className="reviews__amount">{reviews.length}</span>
                 </h2>
                 <ReviewsList reviews={reviews} />
-                <CommentForm onAddReview={addReview} />
+                <CommentForm />
               </section>
             </div>
           </div>

@@ -105,6 +105,29 @@ const changeStatus = createAsyncThunk<
   dispatch(fetchFavoritesAction());
   return data;
 });
+
+const addComments = createAsyncThunk<
+  Comments,
+  {
+    offerID: string | undefined;
+    comm: {
+      comment: string;
+      rating: number;
+    };
+  },
+  {
+    dispatch: AppDispatch;
+    state: State;
+    extra: ThunkExtra;
+  }
+>('data/addComments', async ({ offerID, comm }, { extra }) => {
+  const { data } = await extra.api.post<Comments>(
+    `${APIRoute.Comments}/${offerID}`,
+    comm
+  );
+  return data;
+});
+
 const checkAuthAction = createAsyncThunk<
   void,
   undefined,
@@ -161,4 +184,5 @@ export {
   fetchSelectedOffersAction,
   fetchNearbyOfferAction,
   fetchCommentsAction,
+  addComments,
 };

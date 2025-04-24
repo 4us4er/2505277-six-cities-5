@@ -6,7 +6,6 @@ const initialState: AppData = {
   city: 'Paris',
   sortingBy: 'Popular',
   error: null,
-  isLoading: {},
 };
 
 const appData = createSlice({

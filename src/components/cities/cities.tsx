@@ -12,7 +12,6 @@ function Cities(): JSX.Element {
   const [hoveredID, setHoveredID] = useState('');
 
   const city = useAppSelector(getCurrentCity);
-
   const currentCity = useAppSelector(getCurrentCity);
   const sortingType = useAppSelector(getSortingType);
   const offers = useAppSelector(getOffers);
@@ -21,15 +20,29 @@ function Cities(): JSX.Element {
     setHoveredID('');
   }, []);
 
-  const handleMouseEnter = useCallback((id: string) => {
-    setHoveredID(id);
-  }, []);
+  const handleMouseEnter = useCallback(
+    (id: string) => () => setHoveredID(id),
+    []
+  );
 
   const offersFiltered = useMemo(() => {
     const filtered = offers.filter((offer) => offer.city.name === currentCity);
     return sortingByType(sortingType, filtered);
   }, [offers, currentCity, sortingType]);
 
+  const cardList = useMemo(
+    () =>
+      offersFiltered.map((offer) => (
+        <Card
+          key={offer.id}
+          offer={offer}
+          onMouseLeave={handleMouseLeave}
+          onMouseEnter={handleMouseEnter(offer.id)}
+          classPrefix="cities"
+        />
+      )),
+    [offersFiltered, handleMouseLeave, handleMouseEnter]
+  );
   return (
     <div className="cities">
       <div className="cities__places-container container">
@@ -42,15 +55,7 @@ function Cities(): JSX.Element {
           </b>
           <SortingOptionsList />
           <div className="cities__places-list places__list tabs__content">
-            {offersFiltered.map((offer) => (
-              <Card
-                key={offer.id}
-                offer={offer}
-                onMouseLeave={handleMouseLeave}
-                onMouseEnter={() => handleMouseEnter(offer.id)}
-                classPrefix="cities"
-              />
-            ))}
+            {cardList}
           </div>
         </section>
         <div className="cities__right-section">

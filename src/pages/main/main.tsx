@@ -1,6 +1,7 @@
 import { Cities } from '../../components/cities/cities';
 import { CitiesList } from '../../components/cities-list/cities-list';
 import { Header } from '../../components/header/header';
+
 function Main(): JSX.Element {
   return (
     <div className="page page--gray page--main">

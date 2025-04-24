@@ -1,39 +1,39 @@
 import { useState, Fragment } from 'react';
+import { store } from '../../store/store';
 
-type CommentFormProps = {
-  onAddReview: (review: {
-    rating: number;
-    comment: string;
-    date: string;
-    user?: {
-      name: 'Anonymous';
-      avatarUrl: '';
-      isPro: false;
-    };
-  }) => void;
-};
-function CommentForm({ onAddReview }: CommentFormProps): JSX.Element {
+import { FormEvent } from 'react';
+import { useParams } from 'react-router-dom';
+import { addComments } from '../../store/api-actions';
+
+// type CommentFormProps = {
+//   onAddReview: (review: {
+//     rating: number;
+//     comment: string;
+//     date: string;
+//     user?: {
+//       name: 'Anonymous';
+//       avatarUrl: '';
+//       isPro: false;
+//     };
+//   }) => void;
+// };
+function CommentForm(): JSX.Element {
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
+  const { id } = useParams();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!comment.trim()) {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!comment.trim() || rating < 1) {
       return;
     }
 
-    onAddReview({
-      rating,
-      comment: comment,
-      date: new Date().toISOString().split('T')[0],
-    });
-
+    store.dispatch(addComments({ offerID: id, comm: { comment, rating } }));
     setComment('');
     setRating(0);
   };
 
-  const isSubmitDisabled = comment.length > 50 || rating === 0;
+  const isSubmitDisabled = comment.length < 50 || rating === 0;
   return (
     <form
       className="reviews__form form"

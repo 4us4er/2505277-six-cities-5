@@ -15,12 +15,14 @@ export type OffersData = {
 export type FavoritesData = {
   favorites: OfferData[];
 };
-
+export type Comment = {
+  comment: string;
+  rating: number;
+};
 export type AppData = {
   city: string;
   sortingBy: string;
   error: string | null;
-  isLoading: Record<string, boolean>;
 };
 
 export type State = ReturnType<typeof store.getState>;

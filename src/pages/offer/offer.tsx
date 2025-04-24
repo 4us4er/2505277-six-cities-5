@@ -65,7 +65,7 @@ function Offer(): JSX.Element {
   }, [id]);
 
   const memorizedHeader = useMemo(()=> <Header />,[]);
-  
+
   return (
     <div className="page">
       {memorizedHeader}

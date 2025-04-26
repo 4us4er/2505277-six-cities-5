@@ -1,6 +1,8 @@
 import { store } from '../store/store';
 import { AuthorizationStatus } from '../const/auth';
 import { OfferData } from './offers';
+import { Review } from './comments';
+
 
 export type UserProcess = {
   authorizationStatus: AuthorizationStatus;
@@ -15,14 +17,12 @@ export type OffersData = {
 export type FavoritesData = {
   favorites: OfferData[];
 };
-export type Comment = {
-  comment: string;
-  rating: number;
-};
+
 export type AppData = {
   city: string;
   sortingBy: string;
   error: string | null;
+  comm:Review[];
 };
 
 export type State = ReturnType<typeof store.getState>;

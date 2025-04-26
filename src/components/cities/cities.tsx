@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { OffersMap } from '../map/map';
+import { MemoizedOffersMap } from '../map/map';
 import { Card } from '../card/сard';
 import { useAppSelector } from '../../hooks';
 import { appendSForPlural } from '../../utils/common';
@@ -11,7 +11,6 @@ import { SortingOptionsList } from '../sorting-options-list/sorting-options-list
 function Cities(): JSX.Element {
   const [hoveredID, setHoveredID] = useState('');
 
-  const city = useAppSelector(getCurrentCity);
   const currentCity = useAppSelector(getCurrentCity);
   const sortingType = useAppSelector(getSortingType);
   const offers = useAppSelector(getOffers);
@@ -27,8 +26,8 @@ function Cities(): JSX.Element {
         <Card
           key={offer.id}
           offer={offer}
-          onMouseLeave={()=>setHoveredID('')}
-          onMouseEnter={()=>setHoveredID(offer.id)}
+          onMouseLeave={() => setHoveredID('')}
+          onMouseEnter={() => setHoveredID(offer.id)}
           classPrefix="cities"
         />
       )),
@@ -42,7 +41,7 @@ function Cities(): JSX.Element {
           <b className="places__found">
             {' '}
             {offersFiltered.length} place
-            {appendSForPlural(offersFiltered.length)} to stay in {city}
+            {appendSForPlural(offersFiltered.length)} to stay in {currentCity}
           </b>
           <SortingOptionsList />
           <div className="cities__places-list places__list tabs__content">
@@ -50,7 +49,7 @@ function Cities(): JSX.Element {
           </div>
         </section>
         <div className="cities__right-section">
-          <OffersMap
+          <MemoizedOffersMap
             cityLocation={{
               latitude: 52.3909553943508,
               longitude: 4.85309666406198,

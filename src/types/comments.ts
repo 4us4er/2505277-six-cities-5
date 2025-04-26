@@ -1,11 +1,11 @@
-export type Comments = {
-  rating: number;
+export type Review = {
+  id?: string;
   comment: string;
   date: string;
-  id: string;
-  name: string;
-  user?: {
-    name: string;
-    avatarUrl: string;
+  rating: number;
+  user?:{
+    name:string;
+    avatarUrl:string;
+    isPro:boolean;
   };
 };

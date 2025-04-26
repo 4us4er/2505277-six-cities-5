@@ -1,36 +1,36 @@
 import { useState, Fragment } from 'react';
 import { store } from '../../store/store';
-
 import { FormEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import { addComments } from '../../store/api-actions';
+import { useAppDispatch } from '../../hooks';
+import { setError } from '../../store/app-data/app-data';
 
-// type CommentFormProps = {
-//   onAddReview: (review: {
-//     rating: number;
-//     comment: string;
-//     date: string;
-//     user?: {
-//       name: 'Anonymous';
-//       avatarUrl: '';
-//       isPro: false;
-//     };
-//   }) => void;
-// };
-function CommentForm(): JSX.Element {
+type CommentFormProps = {
+  onCommentSent: () => void;
+};
+function CommentForm({ onCommentSent }: CommentFormProps): JSX.Element {
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
   const { id } = useParams();
-
+  const dispatch = useAppDispatch();
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!comment.trim() || rating < 1) {
       return;
     }
-
-    store.dispatch(addComments({ offerID: id, comm: { comment, rating } }));
-    setComment('');
-    setRating(0);
+    try {
+      store
+        .dispatch(addComments({ offerID: id, comm: { comment, rating } }))
+        .unwrap();
+      onCommentSent();
+      setComment('');
+      setRating(0);
+    } catch (error) {
+      if (error instanceof Error) {
+        dispatch(setError(error.message));
+      }
+    }
   };
 
   const isSubmitDisabled = comment.length < 50 || rating === 0;

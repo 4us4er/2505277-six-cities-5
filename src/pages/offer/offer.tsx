@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { store } from '../../store/store';
 import { useAppSelector } from '../../hooks';
-import { OffersMap } from '../../components/map/map';
-import { Comments } from '../../types/comments';
+import { MemoizedOffersMap } from '../../components/map/map';
+import { Review } from '../../types/comments';
 import { Card } from '../../components/card/сard';
 import { Header } from '../../components/header/header';
 import { getOffers } from '../../store/offers-data/selectors';
@@ -15,10 +15,10 @@ import {
   fetchNearbyOfferAction,
   fetchCommentsAction,
 } from '../../store/api-actions';
+import { useCallback } from 'react';
 
 function Offer(): JSX.Element {
-  const [reviews, setReviews] = useState<Comments[]>([]);
-
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [selectOffer, setSelectOffer] = useState<SelectedOffer | null>(null);
   const [nearbyOffers, setNearbyOffers] = useState<OfferData[] | undefined>(
     undefined
@@ -30,21 +30,29 @@ function Offer(): JSX.Element {
 
   const { id } = useParams();
 
+  const handleMouseEnter = useCallback((ID: string) => {
+    setHoveredOfferID(ID);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setHoveredOfferID('');
+  }, []);
+
   const nearbyList = useMemo(
     () =>
       nearbyOffers?.map((offer) => (
         <Card
           key={offer.id}
           offer={offer}
-          onMouseLeave={()=> setHoveredOfferID('')}
-          onMouseEnter={()=>setHoveredOfferID(offer.id)}
+          onMouseLeave={handleMouseLeave}
+          onMouseEnter={() => handleMouseEnter(offer.id)}
           classPrefix="near-places"
         />
       )),
-    [nearbyOffers]
+    [nearbyOffers, handleMouseLeave, handleMouseEnter]
   );
 
-  useEffect(() => {
+  const reloadsComments = useCallback(() => {
     store
       .dispatch(fetchCommentsAction({ offerID: id }))
       .unwrap()
@@ -52,6 +60,12 @@ function Offer(): JSX.Element {
         setReviews(data);
       });
   }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      reloadsComments();
+    }
+  }, [id, reloadsComments]);
 
   useEffect(() => {
     store
@@ -64,7 +78,7 @@ function Offer(): JSX.Element {
       .then((data) => setNearbyOffers(data));
   }, [id]);
 
-  const memorizedHeader = useMemo(()=> <Header />,[]);
+  const memorizedHeader = useMemo(() => <Header />, []);
 
   return (
     <div className="page">
@@ -180,11 +194,11 @@ function Offer(): JSX.Element {
                   <span className="reviews__amount">{reviews.length}</span>
                 </h2>
                 <ReviewsList reviews={reviews} />
-                <CommentForm />
+                <CommentForm onCommentSent={reloadsComments} />
               </section>
             </div>
           </div>
-          <OffersMap
+          <MemoizedOffersMap
             nearestOffers={nearbyOffers}
             cityLocation={offers[0].location}
             hoveredID={hoveredOfferID}

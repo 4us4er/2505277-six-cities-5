@@ -7,6 +7,7 @@ import { useAppSelector } from '../../hooks';
 import { sortingByType } from '../../utils/common';
 import { getCurrentCity, getSortingType } from '../../store/app-data/selectors';
 import { getOffers } from '../../store/offers-data/selectors';
+import React from 'react';
 
 type MapProps = {
   nearestOffers?: OfferData[];
@@ -38,17 +39,18 @@ function OffersMap({
     return sortingByType(sortingType, filtered);
   }, [offers, currentCity, sortingType]);
 
+  const dataToRender = useMemo(
+    () => (nearestOffers?.length ? nearestOffers : offersFiltered),
+    [nearestOffers, offersFiltered]
+  );
+
   useEffect(() => {
-    if (!map) {
+    if (!map || !dataToRender || dataToRender.length === 0) {
       return;
     }
 
     const markers = leaflet.layerGroup();
-    const dataToRender = nearestOffers?.length ? nearestOffers : offersFiltered;
 
-    if (!dataToRender || dataToRender.length === 0) {
-      return;
-    }
     const newMarkerMap = new Map<string, leaflet.Marker>();
 
     dataToRender.forEach((offer) => {
@@ -73,7 +75,7 @@ function OffersMap({
       markers.clearLayers();
       map.removeLayer(markers);
     };
-  }, [map, nearestOffers, offersFiltered]);
+  }, [map, dataToRender]);
 
   useEffect(() => {
     if (markerRef.current.size > 0) {
@@ -98,8 +100,14 @@ function OffersMap({
     <div
       style={{ height, width, margin: 'auto', marginBottom }}
       ref={mapRef}
-    >
-    </div>
+    ></div>
   );
 }
-export { OffersMap, type MapProps };
+const MemoizedOffersMap = React.memo(
+  OffersMap,
+  (prevProps, nextProps) =>
+    prevProps.hoveredID === nextProps.hoveredID &&
+    prevProps.nearestOffers === nextProps.nearestOffers &&
+    prevProps.cityLocation === nextProps.cityLocation
+);
+export { MemoizedOffersMap };

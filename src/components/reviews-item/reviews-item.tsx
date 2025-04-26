@@ -1,8 +1,9 @@
-import { Comments } from '../../types/comments';
+import { Review } from '../../types/comments';
 import { getFormatDate } from '../../const/date';
 
+
 type ReviewsItemProps = {
-  review: Comments;
+  review:Review;
 };
 
 function ReviewsItem({ review }: ReviewsItemProps): JSX.Element {
@@ -12,18 +13,14 @@ function ReviewsItem({ review }: ReviewsItemProps): JSX.Element {
         <div className="reviews__avatar-wrapper user__avatar-wrapper">
           <img
             className="reviews__avatar user__avatar"
-            src={
-              review.user
-                ? review.user.avatarUrl
-                : `img/avatar-${review.name.length > 4 ? 'max' : 'angelina'}.jpg`
-            }
+            src={review.user?.avatarUrl}
             width="54"
             height="54"
             alt="Reviews avatar"
           />
         </div>
         <span className="reviews__user-name">
-          {review.user ? review.user.name : review.name}
+          {review.user?.name}
         </span>
       </div>
       <div className="reviews__info">

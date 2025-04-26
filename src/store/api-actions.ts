@@ -3,14 +3,14 @@ import { OfferData, SelectedOffer } from '../types/offers';
 import { AxiosInstance } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { State, AppDispatch } from '../types/state';
-import { setError } from './app-data/app-data';
+import { addComm, setError } from './app-data/app-data';
 import { AuthData } from '../types/auth-data';
-import { Comments } from '../types/comments';
 import { UserData } from '../types/user-data';
 import { dropToken, saveToken } from '../services/token';
 import { TIMEOUT_SHOW_ERROR } from '../const/routes';
 import { store } from './store';
 import { setUserEmail } from './user-process/user-process';
+import { Review } from '../types/comments';
 
 type ThunkExtra = {
   api: AxiosInstance;
@@ -57,7 +57,7 @@ const fetchNearbyOfferAction = createAsyncThunk<
 });
 
 const fetchCommentsAction = createAsyncThunk<
-  Comments[],
+Review[],
   { offerID: string | undefined },
   {
     dispatch: AppDispatch;
@@ -65,7 +65,7 @@ const fetchCommentsAction = createAsyncThunk<
     extra: ThunkExtra;
   }
 >('data/fetchComments', async ({ offerID }, { extra }) => {
-  const { data } = await extra.api.get<Comments[]>(
+  const { data } = await extra.api.get<Review[]>(
     `${APIRoute.Comments}/${offerID}`
   );
   return data;
@@ -107,7 +107,7 @@ const changeStatus = createAsyncThunk<
 });
 
 const addComments = createAsyncThunk<
-  Comments,
+Review,
   {
     offerID: string | undefined;
     comm: {
@@ -120,11 +120,13 @@ const addComments = createAsyncThunk<
     state: State;
     extra: ThunkExtra;
   }
->('data/addComments', async ({ offerID, comm }, { extra }) => {
-  const { data } = await extra.api.post<Comments>(
+>('data/addComments', async ({ offerID, comm }, { dispatch,extra }) => {
+  const { data } = await extra.api.post<Review>(
     `${APIRoute.Comments}/${offerID}`,
     comm
   );
+
+  dispatch(addComm(data));
   return data;
 });
 

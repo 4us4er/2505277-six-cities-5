@@ -100,7 +100,8 @@ function OffersMap({
     <div
       style={{ height, width, margin: 'auto', marginBottom }}
       ref={mapRef}
-    ></div>
+    >
+    </div>
   );
 }
 const MemoizedOffersMap = React.memo(

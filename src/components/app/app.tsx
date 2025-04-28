@@ -21,7 +21,7 @@ import { getOffersDataLoadingStatus } from '../../store/offers-data/selectors';
 import { AuthorizationStatus } from '../../const/auth';
 function App(): JSX.Element {
   const isAuthChecked = useAppSelector(getAuthCheckedStatus);
-  const authStatus = useAppSelector(getAuthorizatinStatus)
+  const authStatus = useAppSelector(getAuthorizatinStatus);
 
   useEffect(() => {
     store.dispatch(fetchOffersAction());

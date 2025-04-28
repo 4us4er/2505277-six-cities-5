@@ -86,22 +86,22 @@ function OffersMap({
   }, [hoveredID]);
 
   useEffect(() => {
-    if (map && offersFiltered.length > 0) {
-      map.setView(
-        [
-          offersFiltered[0].location.latitude,
-          offersFiltered[0].location.longitude,
-        ],
-        12
+    if (map && cityLocation) {
+      const bounds = leaflet.latLngBounds(
+        dataToRender.map((offer) => [
+          offer.location.latitude,
+          offer.location.longitude,
+        ])
       );
+
+      map.fitBounds(bounds, { padding: [70, 70] });
     }
-  }, [map, offersFiltered]);
+  }, [map, cityLocation, dataToRender]);
   return (
     <div
       style={{ height, width, margin: 'auto', marginBottom }}
       ref={mapRef}
-    >
-    </div>
+    ></div>
   );
 }
 const MemoizedOffersMap = React.memo(

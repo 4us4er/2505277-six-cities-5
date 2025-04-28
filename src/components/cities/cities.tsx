@@ -50,11 +50,7 @@ function Cities(): JSX.Element {
         </section>
         <div className="cities__right-section">
           <MemoizedOffersMap
-            cityLocation={{
-              latitude: 52.3909553943508,
-              longitude: 4.85309666406198,
-              zoom: 8,
-            }}
+            cityLocation={offers[0].location}
             hoveredID={hoveredID}
             height="794px"
             width="500px"

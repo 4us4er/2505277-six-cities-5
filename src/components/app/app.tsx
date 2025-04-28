@@ -15,16 +15,24 @@ import {
 } from '../../store/api-actions';
 import { store } from '../../store/store';
 import { useEffect } from 'react';
-import { getAuthCheckedStatus } from '../../store/user-process/selectors';
+import { getAuthorizatinStatus,getAuthCheckedStatus} from '../../store/user-process/selectors';
+
 import { getOffersDataLoadingStatus } from '../../store/offers-data/selectors';
+import { AuthorizationStatus } from '../../const/auth';
 function App(): JSX.Element {
   const isAuthChecked = useAppSelector(getAuthCheckedStatus);
+  const authStatus = useAppSelector(getAuthorizatinStatus)
 
   useEffect(() => {
     store.dispatch(fetchOffersAction());
-    store.dispatch(fetchFavoritesAction());
     store.dispatch(checkAuthAction());
   }, []);
+
+  useEffect(() => {
+    if(authStatus === AuthorizationStatus.Auth){
+      store.dispatch(fetchFavoritesAction());
+    }
+  }, [authStatus]);
   const isOffersDataLoading = useAppSelector(getOffersDataLoadingStatus);
   if (!isAuthChecked || isOffersDataLoading) {
     return <LoadingScreen />;
